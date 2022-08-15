@@ -205,18 +205,25 @@ class reverseKGroup {
             length++;
             head = head.next;
         }
-
+        // pre->1→2→3→4→5→6->7->8->NULL, k=3
+        //      c
         // 每k个一组翻转，所以用整除
         for (int i = 0; i < length / k; i++) {
             // 以下思路和 92. 反转区间链表相同
             for (int j = 0; j < k - 1; j++) {
+                // nextTemp=2 nextTemp=3
                 ListNode nextTemp = cur.next;
+                // 1->3 1->4
                 cur.next = nextTemp.next;
+                // 2->1 3->2
                 nextTemp.next = pre.next;
+                // pre->2 pre->3
                 pre.next = nextTemp;
             }
+            // pre->3→2→1→4→5→6->7->8->NULL, k=3
+            //          c
             pre = cur;
-            cur = pre.next;
+            cur = cur.next;
         }
         return preHead.next;
 

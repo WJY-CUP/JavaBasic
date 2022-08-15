@@ -1,8 +1,6 @@
 package DataStructure;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * @Author: Wan Jiangyuan
@@ -283,7 +281,7 @@ class findDisappearedNumbers {
     }
 }
 
-
+// 54. 螺旋矩阵 https://leetcode.cn/problems/spiral-matrix/
 class spiralOrder {
     public List<Integer> spiralOrder(int[][] matrix) {
         if (matrix == null || matrix.length == 0) {
@@ -317,13 +315,71 @@ class spiralOrder {
             left++;
         }
         return ans;
-
     }
 }
 
+// 56. 合并区间 https://leetcode.cn/problems/merge-intervals/
+class merge {
+    public int[][] merge(int[][] intervals) {
+        if (intervals == null || intervals.length == 0) {
+            return null;
+        }
+        // 将所有区间按照左边界递增排序
+        Arrays.sort(intervals, new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                return o1[0] - o2[0];
+            }
+        });
+        ArrayList<int[]> list = new ArrayList<>();
+        int length = intervals.length;
+        int index = 0;
+        // 遍历所有排序后的区间
+        while (index < length) {
+            int left = intervals[index][0];
+            int right = intervals[index][1];
+            // 如果当前区间右边界 >= 下一个区间的左边界（注意必须有=，否则两个紧挨的区间不合并）
+            while (index < length - 1 && right >= intervals[index + 1][0]) {
+                // 更新当前有边界
+                right = Math.max(right, intervals[index + 1][1]);
+                index++;
+            }
+            list.add(new int[]{left, right});
+            index++;
+        }
+        // list 转 array
+        // 注意此处不能使用 (int [])list.toArray()
+        return list.toArray(new int[list.size()][2]);
+    }
 
+}
 
-
+// 57. 插入区间 https://leetcode.cn/problems/insert-interval/
+class insert {
+    public int[][] insert(int[][] intervals, int[] newInterval) {
+        ArrayList<int[]> list = new ArrayList<>();
+        int length = intervals.length;
+        int index = 0;
+        // 添加所有与新区间左边界不重叠的区间（区间右边界 < 新区间左边界），不需要=，否则需要合并区间
+        while (index < length && intervals[index][1] < newInterval[0]) {
+            list.add(intervals[index]);
+            index++;
+        }
+        // 左端取左端的较小者，右端取右端的较大者，不断更新给新区间，需要=，此处需合并区间
+        while (index < length && intervals[index][0] <= newInterval[1]) {
+            newInterval[0] = Math.min(intervals[index][0], newInterval[0]);
+            newInterval[1] = Math.max(intervals[index][1], newInterval[1]);
+            index++;
+        }
+        list.add(newInterval);
+        // 添加右侧不重叠区间（区间左边界 > 新区间右边界），不需要=，否则需要合并区间
+        while (index < length && intervals[index][0] > newInterval[1]) {
+            list.add(intervals[index]);
+            index++;
+        }
+        return list.toArray(new int[list.size()][2]);
+    }
+}
 
 
 
