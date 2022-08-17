@@ -255,7 +255,7 @@ class getPermutation {
         for (int i = 1; i <= n; i++) {
             factorial[i] = factorial[i - 1] * i;
         }
-
+        // index 层数
         dfs(n, k, 0, factorial, path, used);
         return path.toString();
     }

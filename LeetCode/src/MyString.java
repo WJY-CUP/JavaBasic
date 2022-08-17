@@ -302,3 +302,21 @@ class longestCommonPrefix {
     }
 }
 
+// 58. 最后一个单词的长度 https://leetcode.cn/problems/length-of-last-word/
+class lengthOfLastWord {
+    public int lengthOfLastWord(String s) {
+        int length = 0;
+        for (int i = s.length()-1; i >= 0; i--) {
+            // 如果当前字符不是空格
+            if (s.charAt(i) != ' ') {
+                length++;
+            // 如果当前字符是空格且长度不为0，说明最后一个单词已经遍历完成
+            } else if (length != 0) {
+                return length;
+            }
+            // 省略了“如果当前字符是空格且长度为0，说明当前是末尾的空格”
+        }
+        return length;
+    }
+}
+

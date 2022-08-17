@@ -290,6 +290,7 @@ class spiralOrder {
         int top = 0, bottom = matrix.length - 1;
         int left = 0, right = matrix[0].length - 1;
         ArrayList<Integer> ans = new ArrayList<>();
+        // 注意要加上=
         while (top <= bottom && left <= right) {
             // 上
             for (int i = left; i <= right; i++) {
@@ -315,6 +316,40 @@ class spiralOrder {
             left++;
         }
         return ans;
+    }
+}
+
+// 59. 螺旋矩阵 II https://leetcode.cn/problems/spiral-matrix-ii/
+class generateMatrix {
+    // 思路类似54
+    public int[][] generateMatrix(int n) {
+        int[][] ans = new int[n][n];
+        int top = 0, bottom = n - 1;
+        int left = 0, right = n - 1;
+        int num = 1;
+        while (top <= bottom && left <= right) {
+            // 上
+            for (int i = left; i <= right; i++) {
+                ans[top][i] = num++;
+            }
+            top++;
+            for (int i = top; i <= bottom; i++) {
+                ans[i][right] = num++;
+            }
+            right--;
+            // 下
+            for (int i = right; i >= left && top <= bottom; i--) {
+                ans[bottom][i] = num++;
+            }
+            bottom--;
+            // 左
+            for (int i = bottom; i >= top && left <= right; i--) {
+                ans[i][left] = num++;
+            }
+            left++;
+        }
+        return ans;
+
     }
 }
 
