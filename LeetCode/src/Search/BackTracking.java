@@ -93,7 +93,7 @@ class combinationSum {
         List<List<Integer>> res = new ArrayList<>();
         // 排序是剪枝的前提
         Arrays.sort(candidates);
-        Deque<Integer> path = new ArrayDeque<>();
+        Deque<Integer> path = new LinkedList<>();
         dfs(candidates, target, 0, path, res);
         return res;
     }
@@ -108,16 +108,17 @@ class combinationSum {
         // 重点理解这里从 begin 开始搜索的语意
         for (int i = begin; i < length; i++) {
             // 剪枝：减去 candidates[i] 小于 0，减去后面的 candidates[i + 1]、candidates[i + 2] 肯定也小于 0，因此用 break
-            if (target >= candidates[i]) {
-                path.addLast(candidates[i]);
-                // 注意：由于每一个元素可以重复使用，下一轮搜索的起点依然是 i，这里非常容易弄错
-                dfs(candidates,target - candidates[i], i, path, res);
-                // 状态重置
-                path.removeLast();
+            if (target < candidates[i]) {
+                break;
             }
+            path.addLast(candidates[i]);
+            // 注意：由于每一个元素可以重复使用，下一轮搜索的起点依然是 i，这里非常容易弄错
+            dfs(candidates,target - candidates[i], i, path, res);
+            // 状态重置
+            path.removeLast();
+
         }
     }
-
 
 }
 
@@ -134,13 +135,6 @@ class combinationSum2 {
         return res;
     }
 
-    /**
-     * @param candidates 候选数组
-     * @param target     表示剩余，这个值一开始等于 target，基于题目中说明的"所有数字（包括目标数）都是正整数"这个条件
-     * @param begin      从候选数组的 begin 位置开始搜索
-     * @param path       从根结点到叶子结点的路径
-     * @param res
-     */
     private void dfs(int[] candidates, int target, int begin, Deque<Integer> path, List<List<Integer>> res) {
         int length = candidates.length;
         if (target == 0) {
@@ -149,7 +143,7 @@ class combinationSum2 {
         }
         for (int i = begin; i < length; i++) {
             // 大剪枝：减去 candidates[i] 小于 0，减去后面的 candidates[i + 1]、candidates[i + 2] 肯定也小于 0，因此用 break
-            if (target - candidates[i] < 0) {
+            if (target < candidates[i]) {
                 break;
             }
 
@@ -246,7 +240,7 @@ class subsetsWithDup {
 class getPermutation {
     public String getPermutation(int n, int k) {
 
-        StringBuffer path = new StringBuffer();
+        StringBuilder path = new StringBuilder();
         boolean[] used = new boolean[n + 1];
 
         // 计算0-n的阶乘并保存，后续要用
@@ -263,7 +257,8 @@ class getPermutation {
     /**
      * @param index 在这一步之前已经选择了几个数字，其值恰好等于这一步需要确定的下标位置
      */
-    private void dfs(int n, int k, int index, int[] factorial, StringBuffer path, boolean[] used){
+    private void dfs(int n, int k, int index, int[] factorial, StringBuilder path, boolean[] used){
+        // 如果当前层数==n,说明已到达叶子节点
         if (index == n) {
             return;
         }
@@ -271,21 +266,30 @@ class getPermutation {
         // 计算还未确定的数字的全排列的个数，第 1 次进入的时候是 n - 1
         int cnt = factorial[n - 1 - index];
         for (int i = 1; i <= n; i++) {
+            // 如果当前数字使用过
             if (used[i]) {
                 continue;
             }
+            // 如果分支的全排列的个数 < k,说明第k个数肯定不在当前分支i
             if (cnt < k) {
                 k -= cnt;
-                continue;
+            // 如果分支的全排列的个数 > k,说明第k个数肯定在当前分支i，将i加入path
+            } else {
+                path.append(i);
+                used[i] = true;
+                dfs(n, k, index + 1, factorial, path, used);
+                // 注意 1：不可以回溯（重置变量），算法设计是「一下子来到叶子结点」，没有回头的过程
+                // 注意 2：这里要加 return，后面的数没有必要遍历去尝试了，剪枝更彻底
+                return;
             }
-            path.append(i);
-            used[i] = true;
-            dfs(n, k, index + 1, factorial, path, used);
-            // 注意 1：不可以回溯（重置变量），算法设计是「一下子来到叶子结点」，没有回头的过程
-            // 注意 2：这里要加 return，后面的数没有必要遍历去尝试了，剪枝更彻底
-            return;
+
         }
     }
+
+
+
+
+
 
     //--------------------解法二：循环替代回溯，降低空间复杂度-----------------------
     public String getPermutation1(int n, int k) {

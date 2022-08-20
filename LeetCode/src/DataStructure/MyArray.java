@@ -416,7 +416,25 @@ class insert {
     }
 }
 
-
+// 66. 加一 https://leetcode.cn/problems/plus-one/
+class plusOne {
+    public int[] plusOne(int[] digits) {
+        // 从末尾开始遍历
+        for (int i = digits.length - 1; i >= 0; i--) {
+            // 如果当前位 ！= 9 ，+1直接返回，不管是个位还是非个位
+            if (digits[i] != 9) {
+                digits[i]++;
+                return digits;
+            }
+            // 当前位置为0，进位运算在下一轮
+            digits[i] = 0;
+        }
+        //跳出for循环，说明数字全部是9
+        int[] ans = new int[digits.length + 1];
+        ans[0] = 1;
+        return ans;
+    }
+}
 
 
 
