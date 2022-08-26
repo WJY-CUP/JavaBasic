@@ -323,18 +323,21 @@ class findCircleNum {
 }
 
 // 79. 单词搜索 https://leetcode-cn.com/problems/word-search/
-class exist implements Serializable {
+class exist {
 
+    private static final int[][] directions = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
 
     public boolean exist(char[][] board, String word) {
         if (board == null || board.length == 0 || board[0].length == 0) {
             return false;
         }
+        int m = board.length;
+        int n = board[0].length;
 
         char[] chars = word.toCharArray();
-        boolean[][] visited = new boolean[board.length][board[0].length];
-        for (int i = 0; i < board.length; i++) {
-            for (int j = 0; j < board[0].length; j++) {
+        boolean[][] visited = new boolean[m][n];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
                 // 从 (0, 0) 点开始进行 dfs 操作，不断地去找，
                 // 如果以 (0, 0) 点没有对应的路径的话，那么就从 (0, 1) 点开始去找
                 if (dfs(board, chars, visited, i, j, 0)) {
@@ -345,21 +348,29 @@ class exist implements Serializable {
         return false;
     }
 
+    // start：当前在word中该找的位置
     private boolean dfs(char[][] board, char[] chars, boolean[][] visited, int i, int j, int start) {
+        // 如果越界、当前字符不是期望的、当前字符已经访问过（寻找方向不对）
         if (i < 0 || i >= board.length || j < 0 || j >= board[0].length
                 || chars[start] != board[i][j] || visited[i][j]) {
             return false;
         }
+        // 如果该找的位置已经到达末尾，则说明已经找到
         if (start == chars.length - 1) {
             return true;
         }
         visited[i][j] = true;
-        boolean ans = dfs(board, chars, visited, i + 1, j, start + 1)
-                || dfs(board, chars, visited, i - 1, j, start + 1)
-                || dfs(board, chars, visited, i, j + 1, start + 1)
-                || dfs(board, chars, visited, i, j - 1, start + 1);
+        for (int[] d : directions) {
+            if (dfs(board, chars, visited, i + d[0], j + d[1], start + 1)) {
+                return true;
+            }
+        }
+        // boolean ans = dfs(board, chars, visited, i + 1, j, start + 1)
+        //         || dfs(board, chars, visited, i - 1, j, start + 1)
+        //         || dfs(board, chars, visited, i, j + 1, start + 1)
+        //         || dfs(board, chars, visited, i, j - 1, start + 1);
         visited[i][j] = false;
-        return ans;
+        return false;
     }
 
 

@@ -440,8 +440,6 @@ class deleteDuplicates1 {
     }
 }
 
-
-
 // 328. 奇偶链表 https://leetcode-cn.com/problems/odd-even-linked-list/
 class oddEvenList {
     public ListNode oddEvenList(ListNode head) {
@@ -750,5 +748,31 @@ class LRUCache {
     }
 }
 
+// 86. 分隔链表 https://leetcode.cn/problems/partition-list/
+class partition {
+    public ListNode partition(ListNode head, int x) {
+        ListNode preHead1 = new ListNode();
+        ListNode preHead2 = new ListNode();
+        ListNode node1 = preHead1;
+        ListNode node2 = preHead2;
 
+        while (head != null) {
+            if (head.val < x) {
+                node1.next = head;
+                head = head.next;
+                node1 = node1.next;
+                // 不加此行会出现环
+                node1.next = null;
+            } else {
+                node2.next = head;
+                node2 = node2.next;
+                head = head.next;
+                // 不加此行会出现环
+                node2.next = null;
+            }
+        }
+        node1.next = preHead2.next;
+        return preHead1.next;
+    }
+}
 

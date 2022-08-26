@@ -199,15 +199,39 @@ class removeDuplicates {
         while (right < nums.length) {
             // 如果不重复序列的最后一个与当前遍历位置的两个数字不相等
             if (nums[left] != nums[right]) {
-                // 并且两个数字不挨着，否则nums[right]原地复制没必要
+                // 并且两个数字不挨着，否则nums[right]原地复制没必要（该判断有无都可）
                 if (right - left > 1) {
                     // 将 当前遍历位置数字 放到 不重复序列最后位置的下一个
                     nums[left + 1] = nums[right];
                 }
-                // 该放的位置+1
+                // 不重复序列的最后一个位置+1
                 left++;
             }
             // 遍历位置+1
+            right++;
+        }
+        return left + 1;
+    }
+}
+
+// 80. 删除有序数组中的重复项 II https://leetcode.cn/problems/remove-duplicates-from-sorted-array-ii/
+class removeDuplicates1 {
+    public int removeDuplicates(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
+        if (nums.length <= 2) {
+            return nums.length;
+        }
+        // pre始终在left前一个
+        int pre = 0, left = 1, right = 2;
+        while (right < nums.length) {
+            // 如果左右不相等，或者前左不相等
+            if (nums[right] != nums[left] || nums[pre] != nums[left]) {
+                nums[left + 1] = nums[right];
+                left++;
+                pre++;
+            }
             right++;
         }
         return left + 1;
@@ -515,10 +539,84 @@ class reversePrint {
         }
         return res;
     }
-
 }
 
+// 84. 柱状图中最大的矩形 https://leetcode.cn/problems/largest-rectangle-in-histogram/
+class largestRectangleArea {
+    public int largestRectangleArea(int[] heights) {
+        // 这里为了代码简便，在柱体数组的头和尾加了两个高度为 0 的柱体。
+        int[] tmp = new int[heights.length + 2];
+        System.arraycopy(heights, 0, tmp, 1, heights.length);
 
+        Deque<Integer> stack = new ArrayDeque<>();
+        int area = 0;
+        for (int i = 0; i < tmp.length; i++) {
+            // 对栈中柱体来说，栈中的下一个柱体就是其「左边第一个小于自身的柱体」；
+            // 若当前柱体 i 的高度小于栈顶柱体的高度，说明 i 是栈顶柱体的「右边第一个小于栈顶柱体的柱体」。
+            // 因此以栈顶柱体为高的矩形的左右宽度边界就确定了，可以计算面积
+            while (!stack.isEmpty() && tmp[i] < tmp[stack.peek()]) {
+                int h = tmp[stack.pop()];
+                area = Math.max(area, (i - stack.peek() - 1) * h);
+            }
+            // 只要栈为空或者当前高度 >= 栈顶高度，就入栈
+            stack.push(i);
+        }
+        // height 0 3 6 5 2 0
+        // index  0 1 2 3 4 5
+        return area;
+    }
+}
+
+// 85. 最大矩形 https://leetcode.cn/problems/maximal-rectangle/
+class maximalRectangle {
+
+    // 每一层看作是柱状图，可以套用84题柱状图的最大面积。
+    //
+    // 第一层柱状图的高度["1","0","1","0","0"]，最大面积为1；
+    //
+    // 第二层柱状图的高度["2","0","2","1","1"]，最大面积为3；
+    //
+    // 第三层柱状图的高度["3","1","3","2","2"]，最大面积为6；
+    //
+    // 第四层柱状图的高度["4","0","0","3","0"]，最大面积为4；
+
+    public int maximalRectangle(char[][] matrix) {
+        if (matrix == null || matrix.length == 0) {
+            return 0;
+        }
+        int m = matrix.length;
+        int n = matrix[0].length;
+        int[] heights = new int[n];
+        int ans = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (matrix[i][j] == '1') {
+                    heights[j]++;
+                } else {
+                    heights[j] = 0;
+                }
+            }
+            ans = Math.max(ans, largestRectangleArea(heights));
+        }
+        return ans;
+    }
+
+    public int largestRectangleArea(int[] heights) {
+
+        int[] temp = new int[heights.length + 2];
+        System.arraycopy(heights, 0, temp, 1, heights.length);
+        ArrayDeque<Integer> stack = new ArrayDeque<>();
+        int area = 0;
+        for (int i = 0; i < temp.length; i++) {
+            while (!stack.isEmpty() && temp[i] < temp[stack.peek()]) {
+                int high = temp[stack.poll()];
+                area = Math.max(area, high * (i - stack.peek() - 1));
+            }
+            stack.push(i);
+        }
+        return area;
+    }
+}
 
 
 

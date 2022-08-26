@@ -50,7 +50,10 @@ class dailyTemperatures {
     public int[] dailyTemperatures(int[] temperatures) {
         int length = temperatures.length;
         int[] res = new int[length - 1];
+        // 最后一天肯定是0，后面没有比它温度更高的
         res[length - 1] = 0;
+
+        // 从倒数第二天开始
         for (int i = length - 2; i >= 0; i--) {
             for (int j = i + 1; j < length; j++) {
                 if (temperatures[i] < temperatures[j]) {
@@ -61,8 +64,7 @@ class dailyTemperatures {
                 // 优化操作，没有以下else判断也能AC
                 // temperatures[i] >= temperatures[j]
                 else {
-                    // 判断后面是否也有比temperatures[j]大的
-                    // 没有：res[i] = 0；有：二层循环遍历找到比temperatures[i]大的
+                    // A>B,B是一直到最后没有比B大的，所以A以后肯定也没有比A更大的
                     if (res[j] == 0) {
                         res[i] = 0;
                         break;
@@ -179,7 +181,7 @@ class matrixReshape {
     }
 }
 
-// 剑指 Offer 04. 二维数组中的查找 https://leetcode.cn/problems/er-wei-shu-zu-zhong-de-cha-zhao-lcof/
+// 74. 搜索二维矩阵 https://leetcode.cn/problems/search-a-2d-matrix/
 class findNumberIn2DArray {
     public boolean findNumberIn2DArray(int[][] matrix, int target) {
         if (matrix == null || matrix.length == 0) {
@@ -436,12 +438,83 @@ class plusOne {
     }
 }
 
+// 73. 矩阵置零 https://leetcode.cn/problems/set-matrix-zeroes/
+class setZeroes {
+    public void setZeroes(int[][] matrix) {
+        // 标志位：记录第一行，第一列是否有0，因为要原地修改，且不能同时遍历数组和置0，需要先判断出来哪些行和列含0才能开始重置
+        boolean rowFlag=false, colFlag=false;
+        int m = matrix.length;
+        int n = matrix[0].length;
+        // 判断第一行是否有0
+        for (int i = 0; i < n; i++) {
+            if (matrix[0][i] == 0) {
+                rowFlag = true;
+                break;
+            }
+        }
+        // 判断第一列是否有0
+        for (int i = 0; i < m; i++) {
+            if (matrix[i][0] == 0) {
+                colFlag = true;
+                break;
+            }
+        }
+        // 判断除去第一行第一列外是否有0，有则将其第一行和第一列对应位置置为0
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < n; j++) {
+                if (matrix[i][j] == 0) {
+                    matrix[i][0] = matrix[0][j] = 0;
+                }
+            }
+        }
+        // 根据处理后的第一行和第一列标志行，置0
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < n; j++) {
+                if (matrix[i][0] == 0 || matrix[0][j] == 0) {
+                    matrix[i][j] = 0;
+                }
+            }
+        }
+        // 第一行是否有0
+        if (rowFlag) {
+            for (int i = 0; i < n; i++) {
+                matrix[0][i] = 0;
+            }
+        }
+        if (colFlag) {
+            for (int i = 0; i < m; i++) {
+                matrix[i][0] = 0;
+            }
+        }
+    }
+}
 
+// 88. 合并两个有序数组 https://leetcode.cn/problems/merge-sorted-array/
+class merge1 {
+    // 从最后面开始插入
+    public void merge(int[] nums1, int m, int[] nums2, int n) {
+        // tail:num1中该放入的位置
+        int tail = (m--) + (n--) - 1;
+        while (m >= 0 && n >= 0) {
+            // 三元运算符中，符号哪一种情况，才会--，例如下面只会m--或者n--
+            nums1[tail--] = nums1[m] > nums2[n] ? nums1[m--] : nums2[n--];
+        }
+        // 只需要考虑num2还剩下的情况，因为是在num1数组空间中合并
+        while (n >= 0) {
+            nums1[tail--] = nums2[n--];
+        }
+    }
 
+    public static void main(String[] args) {
+        int a=2;
+        int b=10;
 
-
-
-
+        int min = a-- < b-- ? a-- : b--;
+        System.out.println(min);
+        System.out.println(a);
+        System.out.println(b);
+    }
+}
 
 
 

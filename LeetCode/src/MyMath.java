@@ -418,3 +418,22 @@ class fib {
         return dp[n];
     }
 }
+
+// 69. x 的平方根 https://leetcode.cn/problems/sqrtx/
+class mySqrt {
+    public int mySqrt(int x) {
+        int min = 0, max = x;
+        if (x <= 1) {
+            return x;
+        }
+        while (max - min > 1) {
+            int mid = (max - min) / 2 + min;
+            if (x / mid < mid) {
+                max = mid;
+            } else {
+                min = mid;
+            }
+        }
+        return min;
+    }
+}

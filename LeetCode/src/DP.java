@@ -65,6 +65,13 @@ class climbStairs {
         return count;
     }
 
+    public int climbStairs2(int n) {
+        if (n == 1 || n == 2) {
+            return n;
+        }
+        return climbStairs(n - 1) + climbStairs(n - 2);
+    }
+
     // 使用斐波那契数列公式 https://leetcode-cn.com/problems/climbing-stairs/solution/hua-jie-suan-fa-70-pa-lou-ti-by-guanpengchn/
     public int climbStairs1(int n) {
         double sqrt_5 = Math.sqrt(5);
@@ -469,38 +476,28 @@ class numSquares {
 
 }
 
-// 91. 解码方法??????? https://leetcode-cn.com/problems/decode-ways/solution/gong-shui-san-xie-gen-ju-shu-ju-fan-wei-ug3dd/
+// 91. 解码方法 https://leetcode-cn.com/problems/decode-ways/solution/gong-shui-san-xie-gen-ju-shu-ju-fan-wei-ug3dd/
 class numDecodings {
-    public int numDecodings(String s) {
-        int n = s.length();
-        s = " " + s;
-        char[] array = s.toCharArray();
-        int[] f = new int[n + 1];
-        f[0] = 1;
-        for (int i = 1; i <= n; i++) {
-            // a : 代表「当前位置」单独形成 item
-            // b : 代表「当前位置」与「前一位置」共同形成 item
-            int a = array[i] - '0', b = (array[i - 1] - '0') * 10 + (array[i] - '0');
-            // 如果 a 属于有效值，那么 f[i] 可以由 f[i - 1] 转移过来
-            if (1 <= a && a <= 9) f[i] = f[i - 1];
-            // 如果 b 属于有效值，那么 f[i] 可以由 f[i - 2] 或者 f[i - 1] & f[i - 2] 转移过来
-            if (10 <= b && b <= 26) f[i] += f[i - 2];
-        }
-        return f[n];
-    }
 
-    int numDecodings1(String s) {
+    int numDecodings(String s) {
         char[] array = s.toCharArray();
         if (array[0] == '0') return 0; // 第一个就是0
         int pre = 1, curr = 1; //dp[-1] = dp[0] = 1
+
         for (int i = 1; i < s.length(); i++) {
             int tmp = curr;
-            if (array[i] == '0') // *0
-                if (array[i - 1] == '1' || array[i - 1] == '2') curr = pre;  // 10,20
-                else return 0; // 30,40,50...
-            else if (array[i - 1] == '1' || (array[i - 1] == '2' && array[i] >= '1' && array[i] <= '6')) // 1*, 21-26
+            // *0
+            if (array[i] == '0') {
+                // 10,20，该情况与之前的解码方案数没变化
+                if (array[i - 1] == '1' || array[i - 1] == '2') curr = pre;
+                // 30,40,50...
+                else return 0;
+            }
+            // 1*, 21-26
+            else if (array[i - 1] == '1' || (array[i - 1] == '2' && array[i] >= '1' && array[i] <= '6')){
                 curr = curr + pre;
-            // 除去以上三种情况外的else，也就是array[i-1]为0,3-9（此时已排除s[i]==0的情况），dp[i]=dp[i-1]。代码中cur相当于dp[i-1],所以直接省略了一个else语句。
+            }
+                // 除去以上三种情况外的else，也就是array[i-1]为0,3-9（此时已排除s[i]==0的情况），dp[i]=dp[i-1]。代码中cur相当于dp[i-1],所以直接省略了一个else语句。
             pre = tmp;
         }
         return curr;
@@ -858,8 +855,8 @@ class minDistance {
 }
 
 // 583. 两个字符串的删除操作（LCS最长公共子序列，与72类似） https://leetcode-cn.com/problems/delete-operation-for-two-strings/
-// 本质是上求两者不相同的部分长度之和 = 两者长度之和 - 2*相同部分长度
 class minDistance1 {
+    // 本质是上求两者不相同的部分长度之和 = 两者长度之和 - 2*相同部分长度
     public int minDistance(String word1, String word2) {
         int m = word1.length();
         int n = word2.length();
@@ -878,6 +875,26 @@ class minDistance1 {
         }
 
         return m + n - 2 * dp[m][n];
+    }
+}
+
+// 1143. 最长公共子序列(同583) https://leetcode.cn/problems/longest-common-subsequence/
+class longestCommonSubsequence {
+    public int longestCommonSubsequence(String text1, String text2) {
+        int m = text1.length();
+        int n = text2.length();
+        int[][] dp = new int[m + 1][n + 1];
+
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                if (text1.charAt(i - 1) == text2.charAt(j - 1)) {
+                    dp[i][j] = dp[i - 1][j - 1] + 1;
+                } else {
+                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+                }
+            }
+        }
+        return dp[m][n];
     }
 }
 
@@ -1361,7 +1378,7 @@ class candy {
     }
 }
 
-// test
+
 
 
 

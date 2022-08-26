@@ -320,3 +320,49 @@ class lengthOfLastWord {
     }
 }
 
+// 71. 简化路径 https://leetcode.cn/problems/simplify-path/
+class simplifyPath {
+    public String simplifyPath(String path) {
+        // 储存path中有效目录名或者文件名（以后简称"name"）
+        Deque<String> deque = new ArrayDeque<>();
+        int length = path.length();
+
+        // 取出path中除"/"外的name并入栈
+        for (int i = 0; i < length;) {
+
+            // 如果是"/"，则跳过
+            if (path.charAt(i) == '/') {
+                i++;
+                continue;
+            }
+
+            // 此时已经跳过前面的所有"/"，此时的i为name开始，需要找到当前name的结尾
+            int end = i + 1;
+            // 注意边界，并且第一个判断条件一定是"end < length"
+            while (end < length && path.charAt(end) != '/') {
+                end++;
+            }
+            String name = path.substring(i, end);
+
+            // 如果是返回上一级目录，弹出栈中的最后一个目录，表示返回上一级
+            if (name.equals("..")) {
+                if (!deque.isEmpty()) {
+                    deque.pollLast();
+                }
+            // 如果不是"."，就入栈，因为"."代表当前目录，无实际意义
+            } else if (!name.equals(".")) {
+                deque.offerLast(name);
+            }
+            i = end;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        // 将name队列从头开始弹出，从左到右构建结果字符串
+        while (!deque.isEmpty()) {
+            sb.append("/").append(deque.pollFirst());
+        }
+        return sb.length() == 0 ? "/" : sb.toString();
+    }
+}
+
+

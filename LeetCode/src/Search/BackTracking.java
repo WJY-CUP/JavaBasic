@@ -160,7 +160,7 @@ class combinationSum2 {
     }
 }
 
-// 77. 组合III https://leetcode-cn.com/problems/combinations/ 类似39
+// 77. 组合III https://leetcode-cn.com/problems/combinations/ 类似39，数字无重复，不允许重复使用
 class combine {
     public List<List<Integer>> combine(int n, int k) {
         List<List<Integer>> res = new ArrayList<>();
@@ -179,8 +179,9 @@ class combine {
             res.add(new ArrayList<>(path));
             return;
         }
-        // 遍历可能的搜索起点
-        for (int i = begin; i <= n; i++) {
+        // 遍历可能的搜索起点，此处为剪枝操作
+        // https://leetcode.cn/problems/combinations/solution/hui-su-suan-fa-jian-zhi-python-dai-ma-java-dai-ma-/
+        for (int i = begin; i <= n - (k - path.size()) + 1; i++) {
             // 向路径变量里添加一个数
             path.addLast(i);
             // 下一轮搜索，设置的搜索起点要加 1，因为组合数理不允许出现重复的元素
@@ -215,6 +216,7 @@ class subsetsWithDup {
     public List<List<Integer>> subsetsWithDup(int[] nums) {
         List<List<Integer>> res = new ArrayList<>();
         Deque<Integer> path = new ArrayDeque<>();
+        // 剪枝的前提是有序！！！
         Arrays.sort(nums);
         dfs(nums, res, path, 0);
         return res;
@@ -223,12 +225,13 @@ class subsetsWithDup {
     private void dfs(int[] nums, List<List<Integer>> res, Deque<Integer> path, int begin) {
         res.add(new ArrayList<>(path));
         for (int i = begin; i < nums.length; i++) {
+            // 剪枝：有相同的元素则跳过
             if (i > begin && nums[i] == nums[i-1]) {
                 continue;
             }
-            path.add(nums[i]);
+            path.offerLast(nums[i]);
             dfs(nums, res, path, i+1);
-            path.removeLast();
+            path.pollLast();
         }
     }
 

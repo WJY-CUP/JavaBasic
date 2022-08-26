@@ -155,7 +155,7 @@ class frequencySort {
 // 75. 颜色分类 https://leetcode-cn.com/problems/sort-colors/solution/yan-se-fen-lei-by-leetcode-solution/
 class sortColors {
 
-    // 方式一：单指针(two iterations)
+    // 单指针（该放的位置），先把所有0放到前面该放的位置，再把1放到前面该放的位置
     public void sortColors01(int[] nums) {
         int ptr = 0;
         for (int i = 0; i < nums.length; i++) {
@@ -172,27 +172,7 @@ class sortColors {
         }
     }
 
-    // 方式二：双指针(why p0<p1 ?)
-    public void sortColors02(int[] nums) {
-        int p0 = 0, p1 = 0;
-        for (int i = 0; i < nums.length; i++) {
-            if (nums[i] == 1) {
-                swap(nums, i, p1);
-                p1++;
-            } else if (nums[i] == 0) {
-                swap(nums, p0, i);
-                // 0001110
-                // 0000110
-                if (p0 < p1) {
-                    swap(nums, p1, i);
-                }
-                p0++;
-                p1++;
-            }
-        }
-    }
-
-    // 方式三：桶排序(two iterations)
+    // 桶排序(two iterations)
     public void sortColors03(int[] nums) {
         HashMap<Integer, Integer> map = new HashMap<>();
         for (int a : nums) {
@@ -206,42 +186,23 @@ class sortColors {
         }
     }
 
-    // 方式四：三指针
+    // 三指针
     public void sortColors04(int[] nums) {
-        // all in [0, zero) = 0
-        // all in [zero, i) = 1
-        // all in [two, len - 1] = 2
-        // 循环终止条件是 i == two，那么循环可以继续的条件是 i < two
-        // 为了保证初始化的时候 [0, zero) 为空，设置 zero = 0，
-
-        int zero = 0, i = 0, two = nums.length;
-        while (i < two) {
+        // zero:0该放的位置，i：当前遍历位置也即1该放的位置，two：2该放的位置
+        int zero = 0, i = 0, two = nums.length-1;
+        // 因为有可能全是0或者全是2，所以需要 “=”
+        while (i <= two) {
             if (nums[i] == 0) {
                 swap(nums, i, zero);
+                // i之前的肯定都是0、1，所以交换之后无需判断位置i的数字，肯定是1，所以直接 i++
                 i++;
                 zero++;
             } else if (nums[i] == 1) {
                 i++;
             } else {
-                // 用时再--，防止i=two终止循环
-                two--;
                 swap(nums, i, two);
-            }
-        }
-    }
-
-    // 方式五：双指针
-    public void sortColors05(int[] nums) {
-        int p0 = 0, p2 = nums.length - 1;
-        for (int i = 0; i <= p2; i++) {
-            if (nums[i] == 0) {
-                swap(nums, i, p0);
-                p0++;
-            }
-            // 若i,p2均为2，交换之后i仍未2，此时需要遍历i++，故用while
-            while (i <= p2 && nums[i] == 2) {
-                swap(nums, p2, i);
-                p2--;
+                two--;
+                // 因为i后的序列无序，交换过来的可能是0，所以不能 i++
             }
         }
     }
@@ -521,6 +482,61 @@ class search {
         return -1;
     }
 }
+
+
+class search1 {
+    public int search(int[] nums, int target) {
+        int len = nums.length;
+        if(len == 0) return -1;
+        int left = 0, right = len - 1;
+        // 1. 首先明白，旋转数组后，从中间划分，一定有一边是有序的。
+        // 2. 由于一定有一边是有序的，所以根据有序的两个边界值来判断目标值在有序一边还是无序一边
+        // 3. 这题找目标值，遇到目标值即返回
+        // 4. 注意：由于有序的一边的边界值可能等于目标值，所以判断目标值是否在有序的那边时应该加个等号(在二分查找某个具体值得时候如果把握不好边界值，可以再每次查找前判断下边界值，也就是while循环里面的两个if注释)
+        while(left <= right){
+
+            int mid = left + (right - left) / 2;
+            if(nums[mid] == target) return mid;
+            // 分不清是否有序，所以从两端开始去除重复值即可（以下两个if判断是与33的主要区别）
+            // 注意这里不能用while， 原因有二，一是用while，如果全是一样的数字时间复杂度退化为o(n)了。
+            // 二是如果一直left++，right--，最终会影响mid停留的位置与二分法计算的不符（这里需里自己调试理解）,
+            // 导致下面的二分查找法失效，结果出错！所以必须，每移动一次就跳出循环，重新计算mid的值。
+            if(nums[left] == nums[mid]) {
+                left++;
+                continue;
+            }
+            if (nums[right] == nums[mid]) {
+                right--;
+                continue;
+            }
+
+            // 右边有序
+            if(nums[mid] < nums[right]){
+                // 目标值在右边  特例：8 9 1 2 3 4 5 6 7  target=8，所以需要加上 "&& target <= nums[right]"
+                if(nums[mid] < target && target <= nums[right]){
+                    left = mid + 1;
+                    // 目标值在左边
+                }else{
+                    right = mid - 1;
+                }
+                // 左边有序
+            }else{
+                // 目标值在左边  特例：3 4 5 6 7 8 9 1 2   target=1，所以需要加上 "&& nums[left] <= target"
+                if(nums[left] <= target && target < nums[mid]){
+                    right = mid - 1;
+                    // 目标值在右边
+                }else{
+                    left = mid + 1;
+                }
+            }
+        }
+        return -1;
+    }
+}
+
+
+
+
 
 // 剑指 Offer 11. 旋转数组的最小数字 https://leetcode.cn/problems/xuan-zhuan-shu-zu-de-zui-xiao-shu-zi-lcof/
 class minArray {
