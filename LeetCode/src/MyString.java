@@ -1,3 +1,4 @@
+
 import java.util.*;
 
 /**
@@ -366,3 +367,17 @@ class simplifyPath {
 }
 
 
+class test1 {
+    public static void main(String[] args) {
+        // String s1 = new String("hello");
+        // String s2 = new String("hello");
+        // char[] c = new char[]{'h', 'e', 'l', 'l', 'o'};
+        // System.out.println(s1 == s2);
+        // System.out.println(s1.equals(s2));
+        // System.out.println(s1.equals(c));
+        String[] str = new String[10];
+        System.out.println(str[0]);
+        System.out.println(str[10]);
+        System.out.println(str.length);
+    }
+}

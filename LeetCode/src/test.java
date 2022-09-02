@@ -1,8 +1,5 @@
-import com.sun.org.apache.xerces.internal.xs.ItemPSVI;
-
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -60,35 +57,58 @@ public class test {
 
 }
 
-class test2 {
+class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        int num = scanner.nextInt();
-        scanner.nextLine();
-        ArrayList<String> list = new ArrayList<>();
-        String[] temp;
+        int num = Integer.parseInt(scanner.nextLine());
+        System.out.println(num);
+        List<String> searchList;
+        List<String> stopList;
+        Map<String, Integer> map = null;
         for (int i = 0; i < num; i++) {
-            temp = scanner.nextLine().split(" ");
-            Arrays.sort(temp);
-            list.addAll(Arrays.asList(temp));
-        }
-        List<String> newList = list.stream().distinct().collect(Collectors.toList());
+            searchList = Arrays.asList(scanner.nextLine().split(" "));
+            searchList.remove(0);
+            stopList = Arrays.asList(scanner.nextLine().split(" "));
+            stopList.remove(0);
 
-        int length = 0;
-        for (String s : newList) {
-            if (length + s.length() + 1 > 50) {
-                System.out.println();
-                System.out.print(s);
-                length = s.length();
-            } else {
-                if (length != 0) {
-                    System.out.print(" ");
+            for (int j = 0; j < searchList.size(); j++) {
+                String s = searchList.get(j);
+                for (int k = 0; k < stopList.size(); k++) {
+                    boolean match = false;
+                    String t = stopList.get(k);
+                    if (s.length() == t.length()) {
+                        // 遍历当前单词
+                        for (int l = 0; l < s.length(); l++) {
+                            if (t.charAt(l) != '?') {
+                                if (s.charAt(l) != t.charAt(l)) {
+                                    break;
+                                } else {
+                                    if (l == s.length()-1) {
+                                        match = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    // 如果当前单词与stopList任何一个匹配
+                    if (match) {
+                        searchList.remove(j);
+                        break;
+                    }
                 }
-                System.out.print(s);
-                length += (s.length()+1);
             }
+            map = new HashMap<>();
+            for (String s : searchList) {
+                map.put(s, map.getOrDefault(s, 0) + 1);
+            }
+            Collection<Integer> values = map.values();
+            System.out.println(values.stream().max(Integer::compareTo).get());
+            Integer min = Collections.min(map.values());
+
         }
     }
+
+
 }
 
 class streamTest {
@@ -184,6 +204,14 @@ class Solution3 {
         }
         return true;
     }
+
+
+    public static void main(String[] args) {
+        String a = "bbb";
+        String b = "(b)*";
+        System.out.println(a.matches(b));
+
+    }
 }
 
 
@@ -228,13 +256,7 @@ final class Point {
     }
 }
 
-class test1 {
-    public static void main(String[] args) {
-        Point point = new Point(1, 2);
-        point.setX(2);
-        System.out.println(point.getX());
-    }
-}
+
 
 class Solution2 {
     /**
@@ -305,16 +327,243 @@ class Solution2 {
 }
 
 
+class Q1 {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        while (scanner.hasNextLine()) {
+            String s = scanner.nextLine();
+            char[] array = s.toCharArray();
+            if (!(array[0] >= '1' && array[0] <= '9')) {
+                System.out.println(-1);
+            } else {
+                for (int i = 0; i < array.length; ) {
+                    int num=0;
+                    while (i < array.length && array[i] != '.') {
+                        char c = array[i];
+                        num = num * 10 + c - '0';
+                        i++;
+                    }
+                }
+            }
+        }
+    }
+
+    // public static void main(String[] args) {
+    //     System.out.println(Long.toString(10, 2));
+    //     System.out.println(Long.parseLong("1010",2));
+    // }
+
+}
+
+// 神策数据笔试
+class Q2 {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        int num = scanner.nextInt();
+        scanner.nextLine();
+        HashMap<Integer, Integer> map = new HashMap<>();
+        HashSet<Integer> set = new HashSet<>();
+        for (int i = 0; i < num; i++) {
+            int[] path = Arrays.stream(scanner.nextLine().split(" ")).mapToInt(Integer::parseInt).toArray();
+            map.put(path[0], path[1]);
+            set.add(path[0]);
+            set.add(path[1]);
+            // System.out.println(map.get(path[0]));
+        }
+        int[] begin = Arrays.stream(scanner.nextLine().split(" ")).mapToInt(Integer::parseInt).toArray();
+
+        while (true){
+            if (!set.contains(begin[0]) || !set.contains(begin[1])) {
+                return;
+            }
+            Integer end0 = map.get(begin[0]);
+            Integer end1 = map.get(begin[1]);
+            if (end0 == null || end1 == null) {
+                System.out.println(begin[0]);
+            }
+            if (end0.equals(end1)) {
+                System.out.println(end0);
+                return;
+            }
+            if (begin[0] == begin[1]) {
+                System.out.println(begin[0]);
+                return;
+            }
+            if (end0.equals(begin[1])) {
+                System.out.println(end0);
+                return;
+            }
+            if (end1.equals(begin[0])) {
+                System.out.println(end1);
+                return;
+            }
+            begin[0] = end0;
+            begin[1] = end1;
+        }
+
+    }
 
 
 
+}
 
 
+class Q3 {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        scanner.nextLine();
+        int[] price = Arrays.stream(scanner.nextLine().split(" ")).mapToInt(Integer::parseInt).toArray();
+        int ans = 0;
+        for (int i = 0; i < price.length; i++) {
+            for (int j = i+1; j < price.length; j++) {
+                ans = Math.max(ans, price[i] + price[j] - (j - i));
+            }
+        }
+        System.out.println(ans);
+    }
+}
 
 
+class JDQ1 {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        int[] num = Arrays.stream(scanner.nextLine().split(" ")).mapToInt(Integer::parseInt).toArray();
+        String s = scanner.nextLine();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < num[1]; i++) {
+            char c = s.charAt(i);
+            if (c >= 'a' && c <= 'z') {
+                sb.append((char) (c - 32));
+            } else {
+                sb.append(c);
+            }
+        }
+        for (int i = num[1]; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c >= 'A' && c <= 'Z') {
+                sb.append((char) (c + 32));
+            } else {
+                sb.append(c);
+            }
+        }
+        System.out.println(sb.toString());
+
+    }
+
+}
+
+class JDQ3 {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        int n = scanner.nextInt();
+        if (n <= 5) {
+            System.out.println(0);
+        }
+        int result = 0;
+        for (int i = 6; i <= n; i++) {
+            result += B(i);
+        }
+        int mod = (int) 1e9 + 7;
+        System.out.println(result%mod);
+    }
+
+    public static int B(int n) {
+        int zheng = n / 3;
+        int result = 0;
+        for (int i = 2; i <= zheng; i++) {
+            result += C(n - 3 * i + i, i);
+        }
+        return result;
+    }
+
+    public static int C(int n, int m) {
+        int son=1;
+        int mom=1;
+        m = Math.min(m, (n - m));
+        for (int i = m; i > 0; i--) {
+            son*=n;
+            mom*=i;
+            n--;
+        }
+        return son / mom;
+    }
+}
+
+class KunlunwanweiQ1 {
+    /**
+     * 代码中的类名、方法名、参数名已经指定，请勿修改，直接返回方法规定的值即可
+     *
+     *
+     * @param s string字符串
+     * @return int整型
+     */
+    public int longestValidParentheses (String s) {
+        // write code here
+        int n = s.length();
+        int[] dp = new int[n];
+        int max_len = 0;
+        for (int i = 1; i < n; i++) {
+            if (s.charAt(i) == ')') {
+                if (s.charAt(i - 1) == '(') {
+                    if (i < 2) {
+                        dp[i] = 2;
+                    } else {
+                        dp[i] = dp[i - 2] + 2;
+                    }
+                } else {
+                    if (dp[i - 1] > 0) {
+                        int left = i-dp[i-1]-1;
+                        if (left >= 0 && s.charAt(left) == '(') {
+                            dp[i] = dp[i - 1] + 2;
+                            if (left - 1 > 0) {
+                                dp[i] = dp[i] + dp[left - 1];
+                            }
+                        }
+                    }
+                }
+            }
+            max_len = Math.max(max_len, dp[i]);
+        }
+        return max_len;
+    }
+}
 
 
+class TeslaQ1 {
+    public boolean solution(int[] A) {
+        // write your code in Java SE 8
+        int length = A.length;
+        if (length % 2 == 1) {
+            return false;
+        }
+        Arrays.sort(A);
+        for (int i = 0; i < A.length; i=i+2) {
+            if (A[i] != A[i + 1]) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
 
+// 1578
+class TeslaQ2 {
+    public int solution(String S, int[] C) {
+        // write your code in Java SE 8
+        int res = 0;
+        char[] array = S.toCharArray();
+        for (int i = 0; i < array.length-1; i++) {
+            if (array[i] == array[i + 1]) {
+                res += Math.min(C[i], C[i + 1]);
+                if (C[i] >= C[i + 1]) {
+                    C[i + 1] = C[i];
+                }
+            }
+        }
+        return res;
+    }
+
+}
 
 
 

@@ -236,7 +236,7 @@ class Sort {
                     flag = false;
                 }
             }
-            // 如果flag未被改变过，说明剩余待排部分已有序，排序结束
+            // 剪枝：如果flag未被改变过，说明剩余待排部分已有序，排序结束
             if (flag) {
                 break;
             }
@@ -338,9 +338,10 @@ class Sort {
             }
         }
 
-        //最后将基准位跟  nums[i]与nums[j]相等的位置，进行交换,此时i=j
+        // num[i]与num[low]进行交换,此时i=j
         nums[low] = nums[i];
         nums[i] = temp;
+
 
         //左递归
         quickSort(nums, low, j-1);

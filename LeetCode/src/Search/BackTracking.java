@@ -377,7 +377,67 @@ class generateParenthesis {
 }
 
 
+class restoreIpAddresses {
 
+    public List<String> restoreIpAddresses(String s) {
+        ArrayList<String> res = new ArrayList<>();
+        // path存储4个String,分别代表IPV4的四段
+        Deque<String> path = new ArrayDeque<>(4);
+        int length = s.length();
+        // IP地址中的数字字符串一定>4 <12
+        if (length < 4 || length > 12) {
+            return res;
+        }
+        // residue:没找到的IPV4段数量
+        dfs(s, 0, 4, path, res);
+        return res;
+    }
+
+    private void dfs(String s, int begin, int residue, Deque<String> path, List<String> res) {
+        int length = s.length();
+        // 如果当前搜索位置为s末尾
+        if (begin == length) {
+            // 如果四段都找到了
+            if (residue == 0) {
+                res.add(String.join(".", path));
+            }
+            // 但是如果搜索到末尾且没找完四段，说明当前分支搜索失败
+            return;
+        }
+
+        for (int i = begin; i < begin + 3; i++) {
+            // 越界
+            if (i >= length) {
+                break;
+            }
+            // 如果剩下未分割的字符串太长了
+            if (residue * 3 < length - i) {
+                continue;
+            }
+            if (judge(s, begin, i)) {
+                path.addLast(s.substring(begin, i + 1));
+                dfs(s, i + 1, residue - 1, path, res);
+                path.removeLast();
+            }
+        }
+    }
+
+    // 判断是否为合法的IPV4片段
+    private boolean judge(String s, int begin, int end) {
+        int length = end - begin + 1;
+        // 如果当前片段以0开头
+        if (length > 1 && s.charAt(begin) == '0') {
+            return false;
+        }
+        int res = 0;
+        while (begin <= end) {
+            res = res * 10 + s.charAt(begin) - '0';
+            begin++;
+        }
+        return res >= 0 && res <= 255;
+    }
+
+}
 
 
 

@@ -1,6 +1,7 @@
 import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
 
 import java.util.*;
+import java.util.stream.Collector;
 
 /**
  * @Author: Wan Jiangyuan
@@ -225,10 +226,14 @@ class rob1 {
     public int rob(int[] nums) {
         //将环分成0 - n-1 和 1 - n
         //转移方程: dp[n] = Math.max(dp[n-1], dp[n-2] + nums[n])
-        if(nums.length == 1){
+        int length = nums.length;
+        if (length == 0) {
+            return 0;
+        }
+        if(length == 1){
             return nums[0];
         }
-        if(nums.length == 2){
+        if(length == 2){
             return Math.max(nums[0], nums[1]);
         }
         return Math.max(robber(Arrays.copyOfRange(nums,0,nums.length - 1)),
@@ -237,11 +242,11 @@ class rob1 {
 
     int robber(int[] nums){
         int n = nums.length;
-        int[] dp = new int[n+1];
+        int[] dp = new int[n];
         dp[0] = nums[0];
-        dp[1] = Math.max(dp[0], nums[1]);
-        for(int i = 2; i < n; i++){
-            dp[i] = Math.max(dp[i-1], dp[i-2] + nums[i]);
+        dp[1] = Math.max(nums[0], nums[1]);
+        for (int i = 2; i < n; i++) {
+            dp[i] = Math.max(dp[i-1], nums[i] + dp[i-2]);
         }
         return dp[n-1];
     }
@@ -730,36 +735,10 @@ class findMaxForm {
 
 }
 
-// 0-1背包问题 494. 目标和
+// 0-1背包问题 494. 目标和 https://leetcode.cn/problems/target-sum/
 class findTargetSumWays {
-    // ------------------- 解法一：动态规划 -------------------
-    // https://leetcode-cn.com/problems/target-sum/solution/dong-tai-gui-hua-si-kao-quan-guo-cheng-by-keepal/
-    public int findTargetSumWays(int[] nums, int target) {
-        int sum = Arrays.stream(nums).sum();
-        if (Math.abs(target) > Math.abs(sum)) return 0;
 
-        int len = nums.length;
-        int range = sum * 2 + 1;//因为要包含负数所以要两倍，又要加上0这个中间的那个情况
-        int[][] dp = new int[len][range];//这个数组是从总和为-sum开始的
-        // 加上sum纯粹是因为下标界限问题，赋第二维的值的时候都要加上sum
-        // 初始化   第一个数只能分别组成+-nums[i]的一种情况
-        dp[0][sum + nums[0]] += 1;
-        dp[0][sum - nums[0]] += 1;
-        for (int i = 1; i < len; i++) {
-            for (int j = -sum; j <= sum; j++) {
-                if ((j + nums[i]) > sum) { //+不成立 加上当前数大于sum   只能减去当前的数
-                    dp[i][j + sum] = dp[i - 1][j - nums[i] + sum] + 0;
-                } else if ((j - nums[i]) < -sum) { //-不成立  减去当前数小于-sum   只能加上当前的数
-                    dp[i][j + sum] = dp[i - 1][j + nums[i] + sum] + 0;
-                } else {//+-都可以
-                    dp[i][j + sum] = dp[i - 1][j + nums[i] + sum] + dp[i - 1][j - nums[i] + sum];
-                }
-            }
-        }
-        return dp[len - 1][target + sum];
-    }
-
-    // ------------------- 解法二：动态规划（思维优化+空间优化） 牛逼！！！-------------------
+    // ------------------- 动态规划（思维优化+空间优化） 牛逼！！！-------------------
     // https://leetcode-cn.com/problems/target-sum/solution/494-mu-biao-he-dong-tai-gui-hua-zhi-01be-78ll/
     public int findTargetSumWays1(int[] nums, int S) {
         int sum = Arrays.stream(nums).sum();
@@ -771,6 +750,7 @@ class findTargetSumWays {
         int[] dp = new int[target + 1];
         dp[0] = 1;
         for(int num : nums){
+            // 倒着遍历
             for (int j = target; j >= num; j--) {
                 dp[j] = dp[j] + dp[j - num];
             }
@@ -778,7 +758,7 @@ class findTargetSumWays {
         return dp[target];
     }
 
-    // ------------------- 解法三：DFS -------------------
+    // ------------------- DFS -------------------
     // https://leetcode-cn.com/problems/target-sum/solution/gong-shui-san-xie-yi-ti-si-jie-dfs-ji-yi-et5b/
     public int findTargetSumWays2(int[] nums, int target) {
         return dfs(nums, target, 0, 0);
@@ -1139,7 +1119,8 @@ class minSteps {
 
 
 // 股票类型题目 https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/solution/bao-li-mei-ju-dong-tai-gui-hua-chai-fen-si-xiang-b/
-// 121. 买卖股票的最佳时机 https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/
+
+// 121. 买卖股票的最佳时机（只交易一次） https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/
 class maxProfit {
     // 记录【今天之前买入的最小值】
     // 计算【今天之前最小值买入，今天卖出的获利】，也即【今天卖出的最大获利】
@@ -1188,7 +1169,7 @@ class maxProfit {
     }
 }
 
-// 122. 买卖股票的最佳时机 II https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-ii/solution/tan-xin-suan-fa-by-liweiwei1419-2/
+// 122. 买卖股票的最佳时机 II（多次交易） https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-ii/solution/tan-xin-suan-fa-by-liweiwei1419-2/
 class maxProfit1 {
     // 贪心算法：只要后一天比前一天大 就把这两天的差值加一下
     public int maxProfit(int[] prices) {
@@ -1217,7 +1198,7 @@ class maxProfit1 {
             // 这两行调换顺序也是可以的
             // 不持股：dp[i - 1][0] 今天我也不买      dp[i - 1][1] + prices[i] 昨天买今天卖
             dp[i][0] = Math.max(dp[i - 1][0], dp[i - 1][1] + prices[i]);
-            // 持股：dp[i - 1][1] 昨天买的持有      dp[i - 1][0] - prices[i] 今天买
+            // 持股：dp[i - 1][1] 昨天买的持有      dp[i - 1][0] - prices[i] 昨天买今天还买
             dp[i][1] = Math.max(dp[i - 1][1], dp[i - 1][0] - prices[i]);
             // dp[i][0] = Math.max(dp[i - 1][0], dp[i - 1][1] + prices[i]);
             // dp[i][1] = Math.max(dp[i - 1][1], -prices[i]); 与121的区别在此
@@ -1325,6 +1306,7 @@ class longestValidParentheses {
         for(int i = 1; i < n; i++) {
             if(chars[i] == ')') { //遇见右括号才开始判断
                 if(chars[i-1] == '(') { //上一个是左括号
+                    // 判断是否是开头，因为dp可能会越界
                     if(i < 2) { //开头处
                         dp[i] = 2;
                     } else { //非开头处
@@ -1347,6 +1329,10 @@ class longestValidParentheses {
             }
             max_len = Math.max(max_len, dp[i]);
         }
+
+        ArrayList<Integer> list = new ArrayList<>();
+        Integer[] array2 = list.toArray(new Integer[list.size()]);
+
         return max_len;
     }
 }
